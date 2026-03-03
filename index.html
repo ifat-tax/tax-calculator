@@ -859,8 +859,7 @@
         showSyncStatus('⏳ טוען מ-Drive...');
         try {
             const token = await getServiceAccountToken();
-            const folderName = getGdriveFolderName();
-            const folderId = await getOrCreateFolder(token, folderName);
+            const folderId = '15xOuVxVFd5Dk2GSMBeoQcVgbVxqd382O';
             const q = encodeURIComponent(`name='${SYNC_FILENAME}' and '${folderId}' in parents and trashed=false`);
             const search = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`,
                 { headers: { Authorization: 'Bearer ' + token } });
