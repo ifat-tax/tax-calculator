@@ -816,17 +816,34 @@
         return folder.id;
     }
 
-    const DROPBOX_TOKEN = 'sl.u.AGXZOQmUz-65tHofxAUQw6y6-_YVhAGSLh_7eRiles-QquKkd2_tRYaLSPgZwBhI9nCe8l9X-ooJu7Fi9_ZY8f4H_xzHhTW_XGD8n_dtwLO9Qn5PNYP1RCCJqIcJ-gBq4n1h_6frnIrIYEkjhsF3ZvwrgjR99h8806thRaKEW-uTAwlmhUPs2bAVafXipRMZSuMMuCKbMGiFH6FsWOple2YcG1gf7j0lICPrNHdzZaFcj5kRXIk9NqFK4Y2iX5tCJ8yyI8lqrcOQm1mfRdihoYJqOLMQrD7b-QHWzQ7wCYkhYhegxb_8vDdWGN-IaUG7BQvk0ivhcCw5zqTLlQ0AGcwiyEyiSG7XydTGmSD-_KkbpHS5gv5W5-qCy7_QSmHcMLw6YBvO0BkA9kXYLlIpTLSL5Dc_t1wBeAjzywhKErJeGm6zS4bi6Y97betoIZWZH42y3RtSojvvBaJCKMDFSug1DxkhUO-dmSHV5cg6rz6PZVnpPU-cCsCrQAl0J66-QfWI5GvYXpvmIif2I3Vett7z_QDnJzCtf8gRCx7HxvsGhaX0vThOhTwiuYmoOm-4Kj8qVK4ZBUmJgDmIbQ2H4AQIDcnbcOXMi8CbCZEpapwFrHUyu9kEzhrCJPdaRbVF57tuCF62qcEQO1g8rjwnHgcfD0K9psRaorzewkOJiXtFMqnpF5ipIery8LOdGYMDlvG0XxCSU_lylK6M6LFSfwUsQPvoHFHvt_IpQwBUR0DLb5n5VkpQxQ2Fqg7PfYvF12GJOzUy18Ly8WdzlX2fVqD3uR0cLwlZv5RI2OW8EFS_mNCn5NPogDY-LwMw5oA6Msz7YwQxv6qDYTxR2APNFUt0oaC9riBbiZtvo4HvK345v-slQkEdvk5ItN3phwtCaEhdlJCaOA_zWkn8-iZag88mYkO_ahioLgn84-1fdOHTXWqnbTtnzI27ICnySNvWvA84jdL1uOOS-moTYcOdiDB72q42vsDALdDwYGzRoAH-3wtcE5-XVvsNzpkot0RLMweSXOVABousrS_04_YCsA1HIgKaPtN5Me8-2QN1PFm8IcoA8bCB5Qq51hXvnolpFLsR7IKJ3XbnrXHapl4NiPrzQ2jYEhnNFXEmIAw2t8ETF0AEzHxuF3CTSKgDHdnjTz9cEXHOEkX72wV-rn7UxezIgXXzipt2X4D6eYJnu4Zxq7GRrptNa7gDSC1OEJVgXoShaaSW2RMcRo3v1CUdOEDO9ndo5vfRVmEHfCaTtyqMubxZ50b40RZdLbwfcUqh7THTFKBo1pOCa8j_PsJcMvV4FdUQs6Eg38rFBm0ElMMAlw';
+    const DROPBOX_REFRESH_TOKEN = 'sf3ERB5ZmEMAAAAAAAAAAZ_aIFzmGqapRkE1P-e1o5Cka2SB41q1CC5TfSBnO4Ox';
+    const DROPBOX_APP_KEY = 's3z5j57f58pmonz';
+    const DROPBOX_APP_SECRET = '1zw7rg2ccjb7yrl';
     const DROPBOX_PATH = '/tax-backup.json';
+    let _dbxCache = { token: null, exp: 0 };
+
+    async function getDropboxToken() {
+        if(_dbxCache.token && Date.now() < _dbxCache.exp) return _dbxCache.token;
+        const r = await fetch('https://api.dropboxapi.com/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `grant_type=refresh_token&refresh_token=${DROPBOX_REFRESH_TOKEN}&client_id=${DROPBOX_APP_KEY}&client_secret=${DROPBOX_APP_SECRET}`
+        });
+        const d = await r.json();
+        if(!d.access_token) throw new Error('לא ניתן לקבל token מ-Dropbox');
+        _dbxCache = { token: d.access_token, exp: Date.now() + 3600000 };
+        return d.access_token;
+    }
 
     async function dropboxSave() {
         try {
             showSyncStatus('⏳ שומר ל-Dropbox...');
+            const token = await getDropboxToken();
             const payload = getBackupPayload();
             const r = await fetch('https://content.dropboxapi.com/2/files/upload', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + DROPBOX_TOKEN,
+                    'Authorization': 'Bearer ' + token,
                     'Dropbox-API-Arg': JSON.stringify({path: DROPBOX_PATH, mode: 'overwrite', autorename: false}),
                     'Content-Type': 'application/octet-stream'
                 },
@@ -843,10 +860,11 @@
     async function dropboxLoad() {
         try {
             showSyncStatus('⏳ טוען מ-Dropbox...');
+            const token = await getDropboxToken();
             const r = await fetch('https://content.dropboxapi.com/2/files/download', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + DROPBOX_TOKEN,
+                    'Authorization': 'Bearer ' + token,
                     'Dropbox-API-Arg': JSON.stringify({path: DROPBOX_PATH})
                 }
             });
