@@ -158,7 +158,6 @@
                 <svg width="16" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="white"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="white"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="white"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="white"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="white"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 27h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="white"/></svg>
                 📤 טען מאקסל
             </button>
-
         </div>
         <div id="syncStatus" style="margin-top:0.6rem;font-size:0.82rem;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.2);padding:0.4rem 1rem;border-radius:20px;display:none;"></div>
     </div>
@@ -819,66 +818,17 @@
             const now = new Date();
             const dateStr = now.toLocaleDateString('he-IL');
             const timeStr = now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
-            const dateTimeStr = dateStr + ' ' + timeStr;
-
             const periods = ['ינואר-פברואר','מרץ-אפריל','מאי-יוני','יולי-אוגוסט','ספטמבר-אוקטובר','נובמבר-דצמבר'];
-            const expFields = [
-                'מוניות','חניה','חניה מע״מ אפס','משרדי','ניהול יומן פסיכולוג','ציוד משרדי',
-                'דלק','מוסך','כביש 6','איתורן','ביטוח רכב','רשיון רכב','רכב - אחר',
-                'קורסים','כנסים','קליניקה','הדרכה מקצועית',
-                'חשמל','מים','ארנונה','ביטוח דירה','אחר - דירה'
-            ];
 
-            // Build CSV with BOM for Hebrew support
-            let csv = '﻿';
-            csv += `גיבוי מחשבון מס ומע"מ — ${dateTimeStr}
+            let csv = '\uFEFF';
+            csv += 'גיבוי מחשבון מס ומע"מ — ' + dateStr + ' ' + timeStr + '\n\n';
+            csv += 'הגדרות\n';
+            csv += 'מע"מ (%),' + (VAT*100).toFixed(1) + '\n';
+            csv += 'מקדמות מס (%),' + (advanceTaxPercent*100).toFixed(1) + '\n';
+            csv += 'אחוז שימוש עסקי בדירה (%),' + document.getElementById('homeOfficePercent').value + '\n\n';
 
-`;
-            csv += `הגדרות
-`;
-            csv += `מע"מ (%),${(VAT*100).toFixed(1)}
-`;
-            csv += `מקדמות מס (%),${(advanceTaxPercent*100).toFixed(1)}
-`;
-            csv += `אחוז שימוש עסקי בדירה (%),${document.getElementById('homeOfficePercent').value}
-
-`;
-
-            // Header row
-            csv += `סעיף,${periods.join(',')}
-`;
-
-            // Income row
-            let incomeRow = 'הכנסות (כולל מע"מ)';
-            periods.forEach((_, i) => {
-                const s = saved.find(p => p.period.num === i+1);
-                incomeRow += ',' + (s ? (s.inputs['totalIncome'] || 0) : '');
-            });
-            csv += incomeRow + '
-
-';
-
-            // Expense rows
-            csv += 'הוצאות
-';
-            expFields.forEach(field => {
-                let row = field;
-                periods.forEach((_, i) => {
-                    const s = saved.find(p => p.period.num === i+1);
-                    if(s) {
-                        const val = s.inputs[field] || s.inputs[Object.keys(s.inputs).find(k => k === field)] || '';
-                        row += ',' + (val || '');
-                    } else { row += ','; }
-                });
-                csv += row + '
-';
-            });
-
-            csv += '
-סיכומים
-';
-            csv += `סעיף,${periods.join(',')},סה"כ שנתי
-`;
+            csv += 'סיכומים\n';
+            csv += 'סעיף,' + periods.join(',') + ',סה"כ שנתי\n';
 
             const summaryFields = [
                 {label:'הכנסות', key:'inc'},
@@ -887,25 +837,22 @@
                 {label:'מע"מ לתשלום', key:'vat'},
                 {label:'מקדמות מס', key:'advTax'}
             ];
-            summaryFields.forEach(({label, key}) => {
-                let row = label;
+            summaryFields.forEach(function(f) {
+                let row = f.label;
                 let total = 0;
-                periods.forEach((_, i) => {
-                    const s = saved.find(p => p.period.num === i+1);
-                    const val = s ? (s.data[key] || 0) : 0;
+                periods.forEach(function(_, i) {
+                    const s = saved.find(function(p) { return p.period.num === i+1; });
+                    const val = s ? (s.data[f.key] || 0) : 0;
                     total += val;
                     row += ',' + (s ? Math.round(val) : '');
                 });
-                csv += row + ',' + Math.round(total) + '
-';
+                csv += row + ',' + Math.round(total) + '\n';
             });
 
-            csv += `
-תאריך ייצוא,${dateTimeStr}
-`;
+            csv += '\nתאריך ייצוא,' + dateStr + ' ' + timeStr + '\n';
 
-            // Also save raw JSON for import
-            const jsonData = btoa(unescape(encodeURIComponent(JSON.stringify({
+            // Embed full JSON for import
+            const jsonData = JSON.stringify({
                 version: 1,
                 exportedAt: now.toISOString(),
                 settings: {
@@ -913,21 +860,19 @@
                     advanceTaxPercent: parseFloat(document.getElementById('advanceTaxPercent').value),
                     homeOfficePercent: parseFloat(document.getElementById('homeOfficePercent').value)
                 },
-                saved
-            }))));
-            csv += `
-נתונים גולמיים (אל תמחק שורה זו),${jsonData}
-`;
+                saved: saved
+            });
+            const b64 = btoa(unescape(encodeURIComponent(jsonData)));
+            csv += 'נתונים גולמיים (אל תמחק שורה זו),' + b64 + '\n';
 
             const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            const filename = `גיבוי-מס-${dateStr.replace(/\//g,'-')}-${timeStr.replace(/:/g,'-')}.csv`;
-            a.download = filename;
+            a.download = 'גיבוי-מס-' + dateStr.replace(/\//g,'-') + '-' + timeStr.replace(/:/g,'-') + '.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            showSyncStatus(`✅ הקובץ יוצא בהצלחה — ${dateTimeStr}`);
+            showSyncStatus('✅ הקובץ יוצא בהצלחה — ' + dateStr + ' ' + timeStr);
         } catch(e) {
             showSyncStatus('❌ שגיאה בייצוא: ' + e.message);
         }
@@ -937,32 +882,33 @@
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.csv,.json';
-        input.onchange = async (e) => {
+        input.onchange = function(e) {
             const file = e.target.files[0];
             if(!file) return;
-            const text = await file.text();
-            try {
-                // Try JSON first
-                if(file.name.endsWith('.json')) {
-                    applyBackupPayload(text);
-                    showSyncStatus('✅ הגיבוי נטען בהצלחה!');
-                    return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const text = ev.target.result;
+                try {
+                    if(file.name.endsWith('.json')) {
+                        applyBackupPayload(text);
+                        showSyncStatus('✅ הגיבוי נטען בהצלחה!');
+                        return;
+                    }
+                    const lines = text.split('\n');
+                    const jsonLine = lines.find(function(l) { return l.includes('נתונים גולמיים'); });
+                    if(jsonLine) {
+                        const b64 = jsonLine.split(',').slice(1).join(',').trim();
+                        const json = decodeURIComponent(escape(atob(b64)));
+                        applyBackupPayload(json);
+                        showSyncStatus('✅ הגיבוי נטען בהצלחה!');
+                    } else {
+                        showSyncStatus('❌ קובץ לא תקין — ייצא קובץ חדש מהאפליקציה');
+                    }
+                } catch(err) {
+                    showSyncStatus('❌ שגיאה בטעינה: ' + err.message);
                 }
-                // Parse CSV — look for raw JSON line
-                const lines = text.split('
-');
-                const jsonLine = lines.find(l => l.includes('נתונים גולמיים'));
-                if(jsonLine) {
-                    const b64 = jsonLine.split(',').slice(1).join(',').trim();
-                    const json = decodeURIComponent(escape(atob(b64)));
-                    applyBackupPayload(json);
-                    showSyncStatus('✅ הגיבוי נטען בהצלחה!');
-                } else {
-                    showSyncStatus('❌ קובץ לא תקין — ייצא קובץ חדש מהאפליקציה');
-                }
-            } catch(err) {
-                showSyncStatus('❌ שגיאה בטעינה: ' + err.message);
-            }
+            };
+            reader.readAsText(file);
         };
         input.click();
     }
