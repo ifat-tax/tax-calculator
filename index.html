@@ -150,17 +150,15 @@
         <p>ניהול כספי מקצועי עם חישובי מס מלאים</p>
         <p style="margin-top:0.5rem;font-size:0.85rem;color:rgba(255,255,255,0.8);">📎 לחץ על אזור ההעלאה ליד כל שדה, או גרור חשבונית ישירות — הסכום יוזן אוטומטית</p>
         <div style="margin-top:1rem;display:inline-flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;">
-            <button onclick="dropboxSave()" style="padding:0.7rem 1.5rem;background:white;color:#1a73e8;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:inline-flex;align-items:center;gap:0.5rem;">
+            <button onclick="exportToBackupExcel()" style="padding:0.7rem 1.5rem;background:white;color:#1a73e8;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:inline-flex;align-items:center;gap:0.5rem;">
                 <svg width="16" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 27h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
-                💾 שמור ל-Dropbox
+                📥 ייצא לאקסל
             </button>
-            <button onclick="dropboxLoad()" style="padding:0.7rem 1.5rem;background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.6);border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.5rem;">
+            <button onclick="importFromBackupExcel()" style="padding:0.7rem 1.5rem;background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.6);border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.5rem;">
                 <svg width="16" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="white"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="white"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="white"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="white"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="white"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 27h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="white"/></svg>
-                📂 טען מ-Dropbox
+                📤 טען מאקסל
             </button>
-            <button onclick="openTokenSetup()" style="padding:0.7rem 1rem;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;">
-                ⚙️ הגדר חיבור
-            </button>
+
         </div>
         <div id="syncStatus" style="margin-top:0.6rem;font-size:0.82rem;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.2);padding:0.4rem 1rem;border-radius:20px;display:none;"></div>
     </div>
@@ -816,65 +814,157 @@
         return folder.id;
     }
 
-    const DROPBOX_REFRESH_TOKEN = 'sf3ERB5ZmEMAAAAAAAAAAZ_aIFzmGqapRkE1P-e1o5Cka2SB41q1CC5TfSBnO4Ox';
-    const DROPBOX_APP_KEY = 's3z5j57f58pmonz';
-    const DROPBOX_APP_SECRET = '1zw7rg2ccjb7yrl';
-    const DROPBOX_PATH = '/tax-backup.json';
-    let _dbxCache = { token: null, exp: 0 };
-
-    async function getDropboxToken() {
-        if(_dbxCache.token && Date.now() < _dbxCache.exp) return _dbxCache.token;
-        const r = await fetch('https://api.dropboxapi.com/oauth2/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `grant_type=refresh_token&refresh_token=${DROPBOX_REFRESH_TOKEN}&client_id=${DROPBOX_APP_KEY}&client_secret=${DROPBOX_APP_SECRET}`
-        });
-        const d = await r.json();
-        if(!d.access_token) throw new Error('לא ניתן לקבל token מ-Dropbox');
-        _dbxCache = { token: d.access_token, exp: Date.now() + 3600000 };
-        return d.access_token;
-    }
-
-    async function dropboxSave() {
+    function exportToBackupExcel() {
         try {
-            showSyncStatus('⏳ שומר ל-Dropbox...');
-            const token = await getDropboxToken();
-            const payload = getBackupPayload();
-            const r = await fetch('https://content.dropboxapi.com/2/files/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Dropbox-API-Arg': JSON.stringify({path: DROPBOX_PATH, mode: 'overwrite', autorename: false}),
-                    'Content-Type': 'application/octet-stream'
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('he-IL');
+            const timeStr = now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
+            const dateTimeStr = dateStr + ' ' + timeStr;
+
+            const periods = ['ינואר-פברואר','מרץ-אפריל','מאי-יוני','יולי-אוגוסט','ספטמבר-אוקטובר','נובמבר-דצמבר'];
+            const expFields = [
+                'מוניות','חניה','חניה מע״מ אפס','משרדי','ניהול יומן פסיכולוג','ציוד משרדי',
+                'דלק','מוסך','כביש 6','איתורן','ביטוח רכב','רשיון רכב','רכב - אחר',
+                'קורסים','כנסים','קליניקה','הדרכה מקצועית',
+                'חשמל','מים','ארנונה','ביטוח דירה','אחר - דירה'
+            ];
+
+            // Build CSV with BOM for Hebrew support
+            let csv = '﻿';
+            csv += `גיבוי מחשבון מס ומע"מ — ${dateTimeStr}
+
+`;
+            csv += `הגדרות
+`;
+            csv += `מע"מ (%),${(VAT*100).toFixed(1)}
+`;
+            csv += `מקדמות מס (%),${(advanceTaxPercent*100).toFixed(1)}
+`;
+            csv += `אחוז שימוש עסקי בדירה (%),${document.getElementById('homeOfficePercent').value}
+
+`;
+
+            // Header row
+            csv += `סעיף,${periods.join(',')}
+`;
+
+            // Income row
+            let incomeRow = 'הכנסות (כולל מע"מ)';
+            periods.forEach((_, i) => {
+                const s = saved.find(p => p.period.num === i+1);
+                incomeRow += ',' + (s ? (s.inputs['totalIncome'] || 0) : '');
+            });
+            csv += incomeRow + '
+
+';
+
+            // Expense rows
+            csv += 'הוצאות
+';
+            expFields.forEach(field => {
+                let row = field;
+                periods.forEach((_, i) => {
+                    const s = saved.find(p => p.period.num === i+1);
+                    if(s) {
+                        const val = s.inputs[field] || s.inputs[Object.keys(s.inputs).find(k => k === field)] || '';
+                        row += ',' + (val || '');
+                    } else { row += ','; }
+                });
+                csv += row + '
+';
+            });
+
+            csv += '
+סיכומים
+';
+            csv += `סעיף,${periods.join(',')},סה"כ שנתי
+`;
+
+            const summaryFields = [
+                {label:'הכנסות', key:'inc'},
+                {label:'הוצאות', key:'expT'},
+                {label:'רווח', key:'prof'},
+                {label:'מע"מ לתשלום', key:'vat'},
+                {label:'מקדמות מס', key:'advTax'}
+            ];
+            summaryFields.forEach(({label, key}) => {
+                let row = label;
+                let total = 0;
+                periods.forEach((_, i) => {
+                    const s = saved.find(p => p.period.num === i+1);
+                    const val = s ? (s.data[key] || 0) : 0;
+                    total += val;
+                    row += ',' + (s ? Math.round(val) : '');
+                });
+                csv += row + ',' + Math.round(total) + '
+';
+            });
+
+            csv += `
+תאריך ייצוא,${dateTimeStr}
+`;
+
+            // Also save raw JSON for import
+            const jsonData = btoa(unescape(encodeURIComponent(JSON.stringify({
+                version: 1,
+                exportedAt: now.toISOString(),
+                settings: {
+                    vatRate: parseFloat(document.getElementById('vatRate').value),
+                    advanceTaxPercent: parseFloat(document.getElementById('advanceTaxPercent').value),
+                    homeOfficePercent: parseFloat(document.getElementById('homeOfficePercent').value)
                 },
-                body: payload
-            });
-            if(!r.ok) { const e = await r.json(); throw new Error(e.error_summary || 'שגיאה'); }
-            const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
-            showSyncStatus(`✅ נשמר ב-Dropbox בהצלחה! (${now})`);
+                saved
+            }))));
+            csv += `
+נתונים גולמיים (אל תמחק שורה זו),${jsonData}
+`;
+
+            const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            const filename = `גיבוי-מס-${dateStr.replace(/\//g,'-')}-${timeStr.replace(/:/g,'-')}.csv`;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showSyncStatus(`✅ הקובץ יוצא בהצלחה — ${dateTimeStr}`);
         } catch(e) {
-            showSyncStatus('❌ שגיאה בשמירה ל-Dropbox: ' + e.message);
+            showSyncStatus('❌ שגיאה בייצוא: ' + e.message);
         }
     }
 
-    async function dropboxLoad() {
-        try {
-            showSyncStatus('⏳ טוען מ-Dropbox...');
-            const token = await getDropboxToken();
-            const r = await fetch('https://content.dropboxapi.com/2/files/download', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Dropbox-API-Arg': JSON.stringify({path: DROPBOX_PATH})
+    function importFromBackupExcel() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv,.json';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const text = await file.text();
+            try {
+                // Try JSON first
+                if(file.name.endsWith('.json')) {
+                    applyBackupPayload(text);
+                    showSyncStatus('✅ הגיבוי נטען בהצלחה!');
+                    return;
                 }
-            });
-            if(!r.ok) { const e = await r.json(); throw new Error(e.error_summary || 'קובץ לא נמצא'); }
-            const data = await r.json();
-            restoreFromBackup(data);
-            showSyncStatus('✅ הגיבוי נטען בהצלחה מ-Dropbox!');
-        } catch(e) {
-            showSyncStatus('❌ שגיאה בטעינה מ-Dropbox: ' + e.message);
-        }
+                // Parse CSV — look for raw JSON line
+                const lines = text.split('
+');
+                const jsonLine = lines.find(l => l.includes('נתונים גולמיים'));
+                if(jsonLine) {
+                    const b64 = jsonLine.split(',').slice(1).join(',').trim();
+                    const json = decodeURIComponent(escape(atob(b64)));
+                    applyBackupPayload(json);
+                    showSyncStatus('✅ הגיבוי נטען בהצלחה!');
+                } else {
+                    showSyncStatus('❌ קובץ לא תקין — ייצא קובץ חדש מהאפליקציה');
+                }
+            } catch(err) {
+                showSyncStatus('❌ שגיאה בטעינה: ' + err.message);
+            }
+        };
+        input.click();
     }
 
     // Fallback local load
