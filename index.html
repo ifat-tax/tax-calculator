@@ -150,13 +150,13 @@
         <p>ניהול כספי מקצועי עם חישובי מס מלאים</p>
         <p style="margin-top:0.5rem;font-size:0.85rem;color:rgba(255,255,255,0.8);">📎 לחץ על אזור ההעלאה ליד כל שדה, או גרור חשבונית ישירות — הסכום יוזן אוטומטית</p>
         <div style="margin-top:1rem;display:inline-flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;">
-            <button onclick="gdriveSave()" style="padding:0.7rem 1.5rem;background:white;color:#1a73e8;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:inline-flex;align-items:center;gap:0.5rem;">
+            <button onclick="dropboxSave()" style="padding:0.7rem 1.5rem;background:white;color:#1a73e8;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:inline-flex;align-items:center;gap:0.5rem;">
                 <svg width="16" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 27h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
-                שמור ל-Drive
+                💾 שמור ל-Dropbox
             </button>
-            <button onclick="gdriveLoad()" style="padding:0.7rem 1.5rem;background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.6);border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.5rem;">
+            <button onclick="dropboxLoad()" style="padding:0.7rem 1.5rem;background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.6);border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.5rem;">
                 <svg width="16" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="white"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="white"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="white"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="white"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="white"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 27h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="white"/></svg>
-                טען מ-Drive
+                📂 טען מ-Dropbox
             </button>
             <button onclick="openTokenSetup()" style="padding:0.7rem 1rem;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;">
                 ⚙️ הגדר חיבור
@@ -816,63 +816,46 @@
         return folder.id;
     }
 
-    async function gdriveSave() {
-        const raw = getSAKey();
-        if(!raw) { showSyncStatus('⚙️ יש להגדיר Service Account — לחץ "הגדר חיבור"'); openTokenSetup(); return; }
-        showSyncStatus('⏳ שומר ל-Drive...');
+    const DROPBOX_TOKEN = 'sl.u.AGU4jL2-0Y5qWIqHj9QJj6eN6Gks-caKZ6J9VGB3jwTQP3CM9rcGHqfqLHMmQ9U9qXJ8cAK0fXhZ_FxYL47i95rY5dwNQuRmk16pvcJUCouNJWM2QJC1bVOynCHn0kddJXjBN5kgUqOv8UMXtWi4bPH9t3kn1XZ-4Tvd65Shp5_zGl9H4uBNKHPNsjT-EFJDzIOSlL_ZHERFn0D_JYNUHOti4w1fu61G07U5BnJIDrC6o7zDstrLP7w8p5tkG_OGzFJQpMuyju_NJpTWrzxF4m2As3aPaqN55pdYPwZZVjZ3E0X1c2CJFM1XL6wa6T9uUs7GV3WJPjwR6rBWBYGOYynqpsbFxkYt3Hp88i2FKwLi7js59VkWLG3zXWWqSAODcUr21WLEOhpWrJBcp2zOQFV6mJGn-NPkfTQ6aTBIeYq6wK0T3szyupepgGAkFwGPPDKIHM6yirlatH-UZnBkRHzQ6bXVu7Rp9lU1vzvXEvU101PxLthGMG-xxRwJpVSBtY1RfQDZNuphSRn3uo13nSIO3SH4X7SMyfUaYqJZrpoawhSuwdAs_YwxavbTAFixMwhWF3xatViwKMxf5NWp2vCHHEQwG-j0SsvRbyc0IB4L_mwR3kSQSoI1whfP0GJHJkzt8NEk4Si4RYvKBbZ56EDUk8Q7-b8f-dmVPtJGSrXX8jkw4LZ6mcxg-HGqi7PxsPir-fbDKOi27gt1tQVZistj1BufE_IyWiamDkzJCnVrWy7DVYGX87snuYQMJJVvb3_SaGAPoOhnWM_kHBWK6roD_1kbxT-XFEexgloYn3enAZ2AiZ2YuW04Ne2LkCz9Z_0lY2CSeaNGy7ERsnVST07QhuxCNKiEhdpP-86aOczbDFijcNs45mXN8LAuvc-BEHyAZBv85i8l7JiRsoB1lUhhdPS5FniFxzyTW_Jw06eKtciKXuqxP0Y7cSJHOaKr-Qy7JzcrTFjkfWcqNVwl8E6ZxZEKEi775yW1prO2u9SKa-osw6kLIC0cGjdILHGrn50W9J8p-gaeICxBoLdfXCI3V7cHYHv5eOj5fatnGCkChx0yQ_QnFRQ4xgAttpZi_QIK8qFyWwovuihAaT4QQYu1sUl_D1teClDpo2cTD2tL89rqSRFYBZ87KYEBo2rHIfrdJuEXsk03ekn28Mbm6ubLAr2MD_ELw_hmXD9MD5WZ_RBACrQAfOMsxdwFDZM693B6G82BxwCcAgf8qjzDl-BdRJ9RAecmyyK7iBxqQ5vowKFow1WiN73iBlGhcSlLHsMM1BiYCwUjK5qmZDz9MgsJqmMiCV99OVTCg8srkdS8w';
+    const DROPBOX_PATH = '/tax-backup.json';
+
+    async function dropboxSave() {
         try {
-            const token = await getServiceAccountToken();
-            const folderId = '15xOuVxVFd5Dk2GSMBeoQcVgbVxqd382O';
-            const q = encodeURIComponent(`name='${SYNC_FILENAME}' and '${folderId}' in parents and trashed=false`);
-            const search = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`,
-                { headers: { Authorization: 'Bearer ' + token } });
-            const found = await search.json();
+            showSyncStatus('⏳ שומר ל-Dropbox...');
             const payload = getBackupPayload();
-            let r;
-            if(found.files && found.files.length > 0) {
-                r = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${found.files[0].id}?uploadType=media`, {
-                    method: 'PATCH',
-                    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-                    body: payload
-                });
-            } else {
-                const boundary = 'taxcalc';
-                const body = `--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify({name: SYNC_FILENAME, parents:[folderId]})}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${payload}\r\n--${boundary}--`;
-                r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-                    method: 'POST',
-                    headers: { Authorization: 'Bearer ' + token, 'Content-Type': `multipart/related; boundary=${boundary}` },
-                    body
-                });
-            }
-            if(!r.ok) { const e=await r.json(); throw new Error(e.error?.message || 'שגיאה בשמירה'); }
+            const r = await fetch('https://content.dropboxapi.com/2/files/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + DROPBOX_TOKEN,
+                    'Dropbox-API-Arg': JSON.stringify({path: DROPBOX_PATH, mode: 'overwrite', autorename: false}),
+                    'Content-Type': 'application/octet-stream'
+                },
+                body: payload
+            });
+            if(!r.ok) { const e = await r.json(); throw new Error(e.error_summary || 'שגיאה'); }
             const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
-            showSyncStatus(`✅ נשמר ב-Google Drive בהצלחה! (${now})`);
+            showSyncStatus(`✅ נשמר ב-Dropbox בהצלחה! (${now})`);
         } catch(e) {
-            if(e.message==='no_sa') { showSyncStatus('⚙️ יש להגדיר Service Account'); openTokenSetup(); }
-            else showSyncStatus('❌ ' + e.message);
+            showSyncStatus('❌ שגיאה בשמירה ל-Dropbox: ' + e.message);
         }
     }
 
-    async function gdriveLoad() {
-        const raw = getSAKey();
-        if(!raw) { showSyncStatus('⚙️ יש להגדיר Service Account — לחץ "הגדר חיבור"'); openTokenSetup(); return; }
-        showSyncStatus('⏳ טוען מ-Drive...');
+    async function dropboxLoad() {
         try {
-            const token = await getServiceAccountToken();
-            const folderId = '15xOuVxVFd5Dk2GSMBeoQcVgbVxqd382O';
-            const q = encodeURIComponent(`name='${SYNC_FILENAME}' and '${folderId}' in parents and trashed=false`);
-            const search = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`,
-                { headers: { Authorization: 'Bearer ' + token } });
-            const found = await search.json();
-            if(!found.files || found.files.length===0) throw new Error(`הקובץ לא נמצא — שמור תחילה ממחשב אחר`);
-            const dl = await fetch(`https://www.googleapis.com/drive/v3/files/${found.files[0].id}?alt=media`,
-                { headers: { Authorization: 'Bearer ' + token } });
-            if(!dl.ok) throw new Error('שגיאה בהורדה');
-            applyBackupPayload(await dl.text());
-            showSyncStatus('✅ הנתונים נטענו מ-Google Drive בהצלחה!');
+            showSyncStatus('⏳ טוען מ-Dropbox...');
+            const r = await fetch('https://content.dropboxapi.com/2/files/download', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + DROPBOX_TOKEN,
+                    'Dropbox-API-Arg': JSON.stringify({path: DROPBOX_PATH})
+                }
+            });
+            if(!r.ok) { const e = await r.json(); throw new Error(e.error_summary || 'קובץ לא נמצא'); }
+            const data = await r.json();
+            restoreFromBackup(data);
+            showSyncStatus('✅ הגיבוי נטען בהצלחה מ-Dropbox!');
         } catch(e) {
-            if(e.message==='no_sa') { showSyncStatus('⚙️ יש להגדיר Service Account'); openTokenSetup(); }
-            else showSyncStatus('❌ ' + e.message);
+            showSyncStatus('❌ שגיאה בטעינה מ-Dropbox: ' + e.message);
         }
     }
 
