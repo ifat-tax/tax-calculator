@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מחשבון מס ומע"מ מתקדם V1</title>
+    <title>מחשבון מס ומע"מ מתקדם V2</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a365d">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -33,12 +33,16 @@
         .category-total-col { text-align: center; }
         .category-total-col-label { font-size: 0.7rem; opacity: 0.8; margin-bottom: 0.15rem; }
         .category-total-col-value { font-weight: 700; font-size: 0.95rem; }
+        /* CHANGE 2: Vehicle summary bar — 5 columns */
+        .category-total-vehicle { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr; align-items: center; padding: 0.75rem 1rem; background: linear-gradient(135deg, #1a365d 0%, #2d4a7c 100%); border-radius: 6px; margin-top: 0.5rem; margin-bottom: 1rem; color: white; font-size: 0.82rem; gap: 0.4rem; }
+        .category-total-vehicle .category-total-label { font-weight: 700; font-size: 0.88rem; }
+        .category-total-vehicle .category-total-col { text-align: center; }
         .period-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; }
         .period-btn { padding: 1rem; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; font-weight: 600; }
         .period-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 
-        /* Field row: label above, then input + upload side by side */
+        /* Field row */
         .field-row { margin-bottom: 0.65rem; }
         .field-row label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.88rem; color: #374151; }
         .field-inner { display: grid; grid-template-columns: 1fr 70px; gap: 0.5rem; align-items: center; }
@@ -91,9 +95,7 @@
         td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 0.85rem; }
         .total-row { background: #f8fafc; font-weight: 700; }
 
-        /* Toast */
         #aiToast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1a365d; color: white; padding: 0.75rem 1.75rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 9999; display: none; }
-
         .upload-hint { font-size: 0.72rem; color: #94a3b8; margin-bottom: 0.5rem; padding: 0.4rem 0.6rem; background: #f8fafc; border-radius: 4px; }
 
         @media (max-width: 968px) { .main-grid { grid-template-columns: 1fr; } }
@@ -109,7 +111,6 @@
             <svg width="22" height="20" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 27h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
             חיבור ל-Google Drive — Service Account
         </h3>
-
         <div style="background:#e8f0fe;border:1px solid #c5d8fd;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:0.85rem;color:#1a3e8c;line-height:1.9;">
             <strong>הגדרה חד-פעמית — 4 צעדים:</strong><br>
             1. ב-Google Cloud Console (פרויקט "ifat tax") → <strong>IAM &amp; Admin</strong> → <strong>Service Accounts</strong><br>
@@ -118,25 +119,20 @@
             &nbsp;&nbsp;&nbsp;↳ קובץ JSON יורד למחשב שלך<br>
             4. פתח את הקובץ בעורך טקסט → העתק את כל התוכן → הדבק למטה
         </div>
-
         <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:0.75rem;margin-bottom:1rem;font-size:0.82rem;color:#14532d;">
             ✅ <strong>לא פג תוקף לעולם.</strong> מוגדר פעם אחת ועובד לצמיתות על כל מחשב.
         </div>
-
         <div style="background:#f8fafc;border-radius:10px;padding:1rem;margin-bottom:1rem;">
             <label style="display:block;font-weight:700;font-size:0.9rem;margin-bottom:0.4rem;color:#374151;">🔑 תוכן קובץ ה-JSON של Service Account:</label>
             <textarea id="saKeyInput" rows="5" placeholder='{"type":"service_account","project_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...","client_email":"tax-sync@....iam.gserviceaccount.com",...}'
                 style="width:100%;padding:0.6rem;border:2px solid #e2e8f0;border-radius:8px;font-size:0.75rem;font-family:monospace;resize:vertical;"></textarea>
         </div>
-
         <div style="background:#f8fafc;border-radius:10px;padding:1rem;margin-bottom:1rem;">
             <label style="display:block;font-weight:700;font-size:0.9rem;margin-bottom:0.4rem;color:#374151;">📁 שם תיקייה ב-Drive:</label>
             <input type="text" id="gdriveFolderName" value="מחשבון מס" style="width:100%;padding:0.6rem;border:2px solid #e2e8f0;border-radius:8px;font-size:0.9rem;font-family:inherit;">
             <div style="font-size:0.75rem;color:#94a3b8;margin-top:0.35rem;">התיקייה תיווצר אוטומטית ב-Drive של ה-Service Account</div>
         </div>
-
         <div id="tokenStatus" style="display:none;font-size:0.82rem;padding:0.5rem 0.75rem;border-radius:8px;margin-bottom:1rem;"></div>
-
         <div style="display:flex;gap:0.75rem;">
             <button onclick="saveGdriveConfig()" style="flex:2;padding:0.7rem;background:linear-gradient(135deg,#1a73e8,#0d5bba);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.95rem;cursor:pointer;">✅ שמור והתחבר</button>
             <button onclick="testGdriveToken()" style="flex:1;padding:0.7rem;background:#f1f5f9;color:#374151;border:none;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;">🔍 בדוק</button>
@@ -144,9 +140,10 @@
         </div>
     </div>
 </div>
+
 <div class="container">
     <div class="header">
-        <h1>📊 מחשבון מס ומע"מ מתקדם V1</h1>
+        <h1>📊 מחשבון מס ומע"מ מתקדם V2</h1>
         <p>ניהול כספי מקצועי עם חישובי מס מלאים</p>
         <p style="margin-top:0.5rem;font-size:0.85rem;color:rgba(255,255,255,0.8);">📎 לחץ על אזור ההעלאה ליד כל שדה, או גרור חשבונית ישירות — הסכום יוזן אוטומטית</p>
         <div style="margin-top:1rem;display:inline-flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;">
@@ -279,6 +276,11 @@
                     <input type="number" class="exp" disabled data-cat="ניהול יומן פסיכולוג" placeholder="0" step="0.01" oninput="calculate()">
                     <div class="mini-upload" id="uz-יומן" onclick="triggerUpload('יומן')" ondragover="onDragOver(event,this)" ondragleave="onDragLeave(this)" ondrop="onDrop(event,'יומן')"><div class="up-icon">📄</div><div>העלה</div><input type="file" accept=".pdf,image/*" multiple onchange="handleFiles(this.files,'יומן')"></div>
                 </div></div>
+                <!-- CHANGE 1: תרומות row — zero VAT -->
+                <div class="field-row"><label>תרומות (ללא מע"מ)</label><div class="field-inner">
+                    <input type="number" class="exp" disabled data-cat="תרומות" data-novat="true" placeholder="0" step="0.01" oninput="calculate()">
+                    <div class="mini-upload" id="uz-תרומות" onclick="triggerUpload('תרומות')" ondragover="onDragOver(event,this)" ondragleave="onDragLeave(this)" ondrop="onDrop(event,'תרומות')"><div class="up-icon">📄</div><div>העלה</div><input type="file" accept=".pdf,image/*" multiple onchange="handleFiles(this.files,'תרומות')"></div>
+                </div></div>
                 <div class="category-total">
                     <span class="category-total-label">🏢 סה"כ משרד</span>
                     <div class="category-total-col"><div class="category-total-col-label">סה"כ</div><div class="category-total-col-value" id="total-office">₪0</div></div>
@@ -333,11 +335,13 @@
                     <input type="number" class="exp" disabled data-cat="רכב - אחר" placeholder="0" step="0.01" oninput="calculate()">
                     <div class="mini-upload" id="uz-רכבאחר" onclick="triggerUpload('רכבאחר')" ondragover="onDragOver(event,this)" ondragleave="onDragLeave(this)" ondrop="onDrop(event,'רכבאחר')"><div class="up-icon">📄</div><div>העלה</div><input type="file" accept=".pdf,image/*" multiple onchange="handleFiles(this.files,'רכבאחר')"></div>
                 </div></div>
-                <div class="category-total">
+                <!-- CHANGE 2: Vehicle summary — 5 columns with 67% VAT and 45% income tax -->
+                <div class="category-total-vehicle">
                     <span class="category-total-label">🚙 סה"כ רכב</span>
                     <div class="category-total-col"><div class="category-total-col-label">סה"כ</div><div class="category-total-col-value" id="total-vehicle">₪0</div></div>
-                    <div class="category-total-col"><div class="category-total-col-label">ללא מע"מ</div><div class="category-total-col-value" id="total-vehicle-net">₪0</div></div>
-                    <div class="category-total-col"><div class="category-total-col-label">מע"מ</div><div class="category-total-col-value" id="total-vehicle-vat">₪0</div></div>
+                    <div class="category-total-col"><div class="category-total-col-label">ללא מע"מ (100%)</div><div class="category-total-col-value" id="total-vehicle-net">₪0</div></div>
+                    <div class="category-total-col"><div class="category-total-col-label">מע"מ מוכר (67%)</div><div class="category-total-col-value" id="total-vehicle-vat67">₪0</div></div>
+                    <div class="category-total-col"><div class="category-total-col-label">הוצ' מס הכנסה (45%)</div><div class="category-total-col-value" id="total-vehicle-tax45">₪0</div></div>
                 </div>
             </div>
 
@@ -414,20 +418,20 @@
         <div class="tab-content active" id="current">
             <div class="summary-grid">
                 <div class="summary-box"><div class="summary-box-label">הכנסות</div><div class="summary-box-value" id="curInc">₪0</div></div>
-                <div class="summary-box"><div class="summary-box-label">הוצאות</div><div class="summary-box-value" id="curExp">₪0</div></div>
-                <div class="summary-box success"><div class="summary-box-label">רווח</div><div class="summary-box-value" id="curProf">₪0</div></div>
-                <div class="summary-box warning"><div class="summary-box-label">מע"מ לתשלום</div><div class="summary-box-value" id="curVAT">₪0</div></div>
+                <div class="summary-box"><div class="summary-box-label">הוצאות (45% רכב)</div><div class="summary-box-value" id="curExp">₪0</div></div>
+                <div class="summary-box success"><div class="summary-box-label">רווח (45% רכב)</div><div class="summary-box-value" id="curProf">₪0</div></div>
+                <div class="summary-box warning"><div class="summary-box-label">מע"מ לתשלום (67% רכב)</div><div class="summary-box-value" id="curVAT">₪0</div></div>
                 <div class="summary-box" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);"><div class="summary-box-label" style="color:white;opacity:0.9;">מקדמות מס הכנסה</div><div class="summary-box-value" style="color:white;" id="curAdvTax">₪0</div></div>
             </div>
             <div style="margin-top:1.5rem;background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:1.25rem;">
                 <h3 style="font-size:1rem;font-weight:700;color:#1a365d;margin-bottom:1rem;border-bottom:2px solid #e2e8f0;padding-bottom:0.5rem;">📊 פירוט מע"מ הוצאות לדיווח</h3>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
                     <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:0.75rem;">
-                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.25rem;">הוצאות ללא מע"מ (ללא ציוד)</div>
+                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.25rem;">הוצאות ללא מע"מ (ללא ציוד, רכב 45%)</div>
                         <div style="font-size:1.1rem;font-weight:700;color:#1a365d;" id="expNetNoEquip">₪0</div>
                     </div>
                     <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:0.75rem;">
-                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.25rem;">סיכום מע"מ לתשלום (רכב ודירה לפי החלק היחסי)</div>
+                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.25rem;">מע"מ הוצאות (רכב 67%, דירה יחסי)</div>
                         <div style="font-size:1.1rem;font-weight:700;color:#f59e0b;" id="expVATAdjusted">₪0</div>
                     </div>
                     <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:0.75rem;">
@@ -468,14 +472,14 @@
     let VAT=0.18, advanceTaxPercent=0.06, currentPeriod=null, saved=[], INCOME_TAX_RATE=0.31;
     let _prevVAT=18, _prevAdv=6, _prevHome=20;
 
-    // Map uploadKey → input element finder
     const FIELD_MAP = {
         'totalIncome':  () => document.getElementById('totalIncome'),
         'מוניות':       () => document.querySelector('[data-cat="מוניות"]'),
         'חניה':         () => document.querySelector('[data-cat="חניה"]'),
-        'חניה0':        () => document.querySelector('[data-cat="חניה מע״מ אפס"]'),
+        'חניה0':        () => document.querySelector('[data-cat="חניה מע\u05D0\u05B4 אפס"]'),
         'משרדי':        () => document.querySelector('[data-cat="משרדי"]'),
         'יומן':         () => document.querySelector('[data-cat="ניהול יומן פסיכולוג"]'),
+        'תרומות':       () => document.querySelector('[data-cat="תרומות"]'),
         'ציוד':         () => document.querySelector('[data-cat="ציוד משרדי"]'),
         'דלק':          () => document.querySelector('[data-cat="דלק"]'),
         'מוסך':         () => document.querySelector('[data-cat="מוסך"]'),
@@ -621,7 +625,6 @@
     }
     function clearInputs() {
         document.querySelectorAll('input[type=number]').forEach(i=>{ if(!['vatRate','advanceTaxPercent','homeOfficePercent'].includes(i.id)) i.value=''; });
-        // Reset upload zones
         document.querySelectorAll('.mini-upload').forEach(zone=>{
             const key=zone.id.replace('uz-','');
             zone.className='mini-upload';
@@ -634,6 +637,7 @@
     function fmt(n) { return '₪'+Math.round(n).toLocaleString('he-IL'); }
     function sepVAT(t) { const n=t/(1+VAT); return {n,v:t-n}; }
 
+    // CHANGE 3: Updated calculate() with 67% vehicle VAT and 45% vehicle for profit/expenses
     function calculate() {
         const inc=parseFloat(document.getElementById('totalIncome').value)||0;
         const {n:incN,v:incV}=sepVAT(inc);
@@ -668,34 +672,66 @@
 
         document.getElementById('home-total-label').textContent=`🏠 סה"כ דירה (${Math.round(hr*100)}%)`;
 
-        const vat=incV-vatP, prof=incN-expN, advTax=incN*advanceTaxPercent;
+        // Vehicle adjustments
+        const VEH_VAT_RATIO = 0.67;   // 67% of vehicle VAT is recognized
+        const VEH_TAX_RATIO = 0.45;   // 45% of vehicle total is deductible for income tax
 
-        ['transport','office','equipment','vehicle','training'].forEach((sec,_)=>{
-            const [t,n,v]=[{transport:[tTr,tTrN,tTrV],office:[tOf,tOfN,tOfV],equipment:[tEq,tEqN,tEqV],vehicle:[tVe,tVeN,tVeV],training:[tTn,tTnN,tTnV]}[sec]][0];
-            document.getElementById(`total-${sec}`).textContent=fmt(t);
-            document.getElementById(`total-${sec}-net`).textContent=fmt(n);
-            document.getElementById(`total-${sec}-vat`).textContent=fmt(v);
-        });
+        const tVeVat67 = tVeV * VEH_VAT_RATIO;          // recognized VAT from vehicle
+        const tVeTax45 = tVe * VEH_TAX_RATIO;           // income-tax deductible portion of vehicle
+
+        // Update vehicle summary bar (5 cols)
+        document.getElementById('total-vehicle').textContent=fmt(tVe);
+        document.getElementById('total-vehicle-net').textContent=fmt(tVeN);
+        document.getElementById('total-vehicle-vat67').textContent=fmt(tVeVat67);
+        document.getElementById('total-vehicle-tax45').textContent=fmt(tVeTax45);
+
+        // Profit: use 45% of vehicle total instead of full vehicle net
+        // expN currently includes tVeN (full net). Replace with VEH_TAX_RATIO * tVe
+        const expNForProfit = expN - tVeN + tVeTax45;
+        // expT for display: replace full vehicle with 45% of vehicle
+        const expTDisplay = expT - tVe + tVeTax45;
+
+        const prof = incN - expNForProfit;
+
+        // VAT payable: use 67% of vehicle VAT
+        const expVATAdjusted = tTrV + tOfV + tTnV + homeV + tVeVat67;
+        const vatAdjustedPayable = incV - expVATAdjusted - tEqV;
+        const advTax = incN * advanceTaxPercent;
+
+        // Update other category bars
+        document.getElementById('total-transport').textContent=fmt(tTr);
+        document.getElementById('total-transport-net').textContent=fmt(tTrN);
+        document.getElementById('total-transport-vat').textContent=fmt(tTrV);
+        document.getElementById('total-office').textContent=fmt(tOf);
+        document.getElementById('total-office-net').textContent=fmt(tOfN);
+        document.getElementById('total-office-vat').textContent=fmt(tOfV);
+        document.getElementById('total-equipment').textContent=fmt(tEq);
+        document.getElementById('total-equipment-net').textContent=fmt(tEqN);
+        document.getElementById('total-equipment-vat').textContent=fmt(tEqV);
+        document.getElementById('total-training').textContent=fmt(tTn);
+        document.getElementById('total-training-net').textContent=fmt(tTnN);
+        document.getElementById('total-training-vat').textContent=fmt(tTnV);
         document.getElementById('total-home').textContent=fmt(homeT);
         document.getElementById('total-home-net').textContent=fmt(homeN);
         document.getElementById('total-home-vat').textContent=fmt(homeV);
 
+        // Summary boxes
         document.getElementById('curInc').textContent=fmt(inc);
-        document.getElementById('curExp').textContent=fmt(expT);
+        document.getElementById('curExp').textContent=fmt(expTDisplay);
         document.getElementById('curProf').textContent=fmt(prof);
-        document.getElementById('curVAT').textContent=fmt(vat);
+        document.getElementById('curVAT').textContent=fmt(vatAdjustedPayable);
         document.getElementById('curAdvTax').textContent=fmt(advTax);
         document.getElementById('inc-total').textContent=fmt(inc);
         document.getElementById('inc-net').textContent=fmt(incN);
         document.getElementById('inc-vat').textContent=fmt(incV);
 
-        const expVATAdjusted=tTrV+tOfV+tTnV+homeV+(tVeV*0.667);
-        document.getElementById('expNetNoEquip').textContent=fmt(expN-tEqN);
+        // VAT detail panel
+        document.getElementById('expNetNoEquip').textContent=fmt(expNForProfit-tEqN);
         document.getElementById('expVATAdjusted').textContent=fmt(expVATAdjusted);
         document.getElementById('equipVATDisplay').textContent=fmt(tEqV);
-        document.getElementById('vatAdjustedPayable').textContent=fmt(incV-expVATAdjusted-tEqV);
+        document.getElementById('vatAdjustedPayable').textContent=fmt(vatAdjustedPayable);
 
-        return {inc,expT,incN,expN,vat,prof,cats,advTax};
+        return {inc,expT:expTDisplay,incN,expN:expNForProfit,vat:vatAdjustedPayable,prof,cats,advTax};
     }
 
     function saveDraft() {
@@ -709,9 +745,9 @@
         showToast(`💾 טיוטה נשמרה — ${currentPeriod.name}`);
     }
 
-    // ── Google Drive Service Account Sync (permanent, no expiry) ──
+    // ── Google Drive Service Account Sync ──
     const SYNC_FILENAME = 'tax-calculator-sync.json';
-    let _saCache = null; // parsed service account JSON
+    let _saCache = null;
     let _tokenCache = { token: null, exp: 0 };
 
     function getSAKey()          { return localStorage.getItem('saKey') || ''; }
@@ -760,21 +796,18 @@
         el.style.color = type==='ok' ? '#166534' : type==='err' ? '#991b1b' : '#1e40af';
     }
 
-    // Build JWT and exchange for access token
     async function getServiceAccountToken() {
         if(_tokenCache.token && Date.now() < _tokenCache.exp) return _tokenCache.token;
         const raw = getSAKey();
         if(!raw) throw new Error('no_sa');
         const sa = _saCache || JSON.parse(raw);
         _saCache = sa;
-
         const now = Math.floor(Date.now() / 1000);
         const header = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
         const claim  = btoa(JSON.stringify({
             iss: sa.client_email, scope: 'https://www.googleapis.com/auth/drive',
             aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600
         })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-
         const unsigned = header + '.' + claim;
         const pemKey = sa.private_key.replace(/-----[^-]+-----/g,'').replace(/\s/g,'');
         const keyData = Uint8Array.from(atob(pemKey), c => c.charCodeAt(0));
@@ -784,7 +817,6 @@
             new TextEncoder().encode(unsigned));
         const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
         const jwt = unsigned + '.' + sigB64;
-
         const resp = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -796,7 +828,6 @@
         return data.access_token;
     }
 
-    // Find or create folder by name, return its ID
     async function getOrCreateFolder(token, folderName) {
         const q = encodeURIComponent(`name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
         const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`,
@@ -819,17 +850,14 @@
             const dateStr = now.toLocaleDateString('he-IL');
             const timeStr = now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
             const periods = ['ינואר-פברואר','מרץ-אפריל','מאי-יוני','יולי-אוגוסט','ספטמבר-אוקטובר','נובמבר-דצמבר'];
-
             let csv = '\uFEFF';
             csv += 'גיבוי מחשבון מס ומע"מ — ' + dateStr + ' ' + timeStr + '\n\n';
             csv += 'הגדרות\n';
             csv += 'מע"מ (%),' + (VAT*100).toFixed(1) + '\n';
             csv += 'מקדמות מס (%),' + (advanceTaxPercent*100).toFixed(1) + '\n';
             csv += 'אחוז שימוש עסקי בדירה (%),' + document.getElementById('homeOfficePercent').value + '\n\n';
-
             csv += 'סיכומים\n';
             csv += 'סעיף,' + periods.join(',') + ',סה"כ שנתי\n';
-
             const summaryFields = [
                 {label:'הכנסות', key:'inc'},
                 {label:'הוצאות', key:'expT'},
@@ -838,8 +866,7 @@
                 {label:'מקדמות מס', key:'advTax'}
             ];
             summaryFields.forEach(function(f) {
-                let row = f.label;
-                let total = 0;
+                let row = f.label, total = 0;
                 periods.forEach(function(_, i) {
                     const s = saved.find(function(p) { return p.period.num === i+1; });
                     const val = s ? (s.data[f.key] || 0) : 0;
@@ -848,13 +875,9 @@
                 });
                 csv += row + ',' + Math.round(total) + '\n';
             });
-
             csv += '\nתאריך ייצוא,' + dateStr + ' ' + timeStr + '\n';
-
-            // Embed full JSON for import
             const jsonData = JSON.stringify({
-                version: 1,
-                exportedAt: now.toISOString(),
+                version: 1, exportedAt: now.toISOString(),
                 settings: {
                     vatRate: parseFloat(document.getElementById('vatRate').value),
                     advanceTaxPercent: parseFloat(document.getElementById('advanceTaxPercent').value),
@@ -864,36 +887,25 @@
             });
             const b64 = btoa(unescape(encodeURIComponent(jsonData)));
             csv += 'נתונים גולמיים (אל תמחק שורה זו),' + b64 + '\n';
-
             const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = 'גיבוי-מס-' + dateStr.replace(/\//g,'-') + '-' + timeStr.replace(/:/g,'-') + '.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             showSyncStatus('✅ הקובץ יוצא בהצלחה — ' + dateStr + ' ' + timeStr);
-        } catch(e) {
-            showSyncStatus('❌ שגיאה בייצוא: ' + e.message);
-        }
+        } catch(e) { showSyncStatus('❌ שגיאה בייצוא: ' + e.message); }
     }
 
     function importFromBackupExcel() {
         const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.csv,.json';
+        input.type = 'file'; input.accept = '.csv,.json';
         input.onchange = function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
+            const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(ev) {
                 const text = ev.target.result;
                 try {
-                    if(file.name.endsWith('.json')) {
-                        applyBackupPayload(text);
-                        showSyncStatus('✅ הגיבוי נטען בהצלחה!');
-                        return;
-                    }
+                    if(file.name.endsWith('.json')) { applyBackupPayload(text); showSyncStatus('✅ הגיבוי נטען בהצלחה!'); return; }
                     const lines = text.split('\n');
                     const jsonLine = lines.find(function(l) { return l.includes('נתונים גולמיים'); });
                     if(jsonLine) {
@@ -901,19 +913,14 @@
                         const json = decodeURIComponent(escape(atob(b64)));
                         applyBackupPayload(json);
                         showSyncStatus('✅ הגיבוי נטען בהצלחה!');
-                    } else {
-                        showSyncStatus('❌ קובץ לא תקין — ייצא קובץ חדש מהאפליקציה');
-                    }
-                } catch(err) {
-                    showSyncStatus('❌ שגיאה בטעינה: ' + err.message);
-                }
+                    } else { showSyncStatus('❌ קובץ לא תקין — ייצא קובץ חדש מהאפליקציה'); }
+                } catch(err) { showSyncStatus('❌ שגיאה בטעינה: ' + err.message); }
             };
             reader.readAsText(file);
         };
         input.click();
     }
 
-    // Fallback local load
     function handleQuickLoad(input) {
         const file = input.files[0]; if(!file) return;
         const r = new FileReader();
@@ -932,7 +939,6 @@
         syncTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
     }
 
-    
     function saveApiKey() {
         const key = document.getElementById('anthropicApiKeyInput').value.trim();
         if(!key) { showToast('❌ הזן מפתח תחילה'); return; }
@@ -940,26 +946,13 @@
         showToast('✅ המפתח נשמר — ניתן להעלות חשבוניות');
     }
     window.addEventListener('DOMContentLoaded', () => {
-        const saved = localStorage.getItem('anthropicApiKey');
-        if(saved) { const el = document.getElementById('anthropicApiKeyInput'); if(el) el.value = saved; }
+        const s = localStorage.getItem('anthropicApiKey');
+        if(s) { const el = document.getElementById('anthropicApiKeyInput'); if(el) el.value = s; }
     });
-
-    function openGdriveModal() {
-        document.getElementById('gdriveModal').classList.add('open');
-        const savedKey = localStorage.getItem('gdriveApiKey');
-        if(savedKey) document.getElementById('gdriveApiKey').value = savedKey;
-    }
-    function closeGdriveModal() { document.getElementById('gdriveModal').classList.remove('open'); }
-
-    function gdriveStatus(msg, type) {
-        const el = document.getElementById('gdriveStatus');
-        el.textContent = msg; el.className = 'gdrive-status ' + type;
-    }
 
     function getBackupPayload() {
         return JSON.stringify({
-            version: 1,
-            exportedAt: new Date().toISOString(),
+            version: 1, exportedAt: new Date().toISOString(),
             settings: {
                 vatRate: parseFloat(document.getElementById('vatRate').value),
                 advanceTaxPercent: parseFloat(document.getElementById('advanceTaxPercent').value),
@@ -979,81 +972,6 @@
         if(obj.saved) { saved = obj.saved; localStorage.setItem('saved', JSON.stringify(saved)); renderSaved(); calcAnnual(); }
     }
 
-    // Export to local JSON file
-    function exportJsonLocal() {
-        const blob = new Blob([getBackupPayload()], {type:'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'tax-calculator-backup-' + new Date().toISOString().split('T')[0] + '.json';
-        a.click();
-        gdriveStatus('✅ הקובץ הורד בהצלחה', 'ok');
-    }
-
-    function importJsonLocal() { document.getElementById('importJsonInput').click(); }
-    function handleImportJson(input) {
-        const file = input.files[0]; if(!file) return;
-        const r = new FileReader();
-        r.onload = e => {
-            try { applyBackupPayload(e.target.result); gdriveStatus('✅ הנתונים יובאו בהצלחה', 'ok'); }
-            catch(err) { gdriveStatus('❌ שגיאה בקריאת הקובץ: ' + err.message, 'err'); }
-        };
-        r.readAsText(file); input.value='';
-    }
-
-    // Google Drive API upload (appdata or named file via Drive REST API v3)
-    async function driveUpload() {
-        const key = document.getElementById('gdriveApiKey').value.trim();
-        const filename = document.getElementById('gdriveFilename').value.trim() || 'tax-calculator-data.json';
-        if(!key) { gdriveStatus('❌ יש להזין API Key', 'err'); return; }
-        localStorage.setItem('gdriveApiKey', key);
-        gdriveStatus('⏳ מעלה ל-Drive...', 'info');
-        try {
-            // Check if file exists
-            const searchResp = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${encodeURIComponent(filename)}'&spaces=drive&fields=files(id,name)&key=${key}`);
-            if(!searchResp.ok) throw new Error('שגיאת חיבור — בדוק את ה-API Key');
-            const searchData = await searchResp.json();
-            if(searchData.error) throw new Error(searchData.error.message);
-
-            const payload = getBackupPayload();
-            const metadata = { name: filename, mimeType: 'application/json' };
-            const form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(metadata)], {type:'application/json'}));
-            form.append('file', new Blob([payload], {type:'application/json'}));
-
-            let resp;
-            if(searchData.files && searchData.files.length > 0) {
-                const fileId = searchData.files[0].id;
-                resp = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart&key=${key}`, { method:'PATCH', body:form });
-            } else {
-                resp = await fetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&key=${key}`, { method:'POST', body:form });
-            }
-            if(!resp.ok) { const err=await resp.json(); throw new Error(err.error?.message || 'שגיאה בהעלאה'); }
-            gdriveStatus('✅ הנתונים נשמרו ב-Drive בהצלחה!', 'ok');
-        } catch(e) { gdriveStatus('❌ ' + e.message, 'err'); }
-    }
-
-    async function driveDownload() {
-        const key = document.getElementById('gdriveApiKey').value.trim();
-        const filename = document.getElementById('gdriveFilename').value.trim() || 'tax-calculator-data.json';
-        if(!key) { gdriveStatus('❌ יש להזין API Key', 'err'); return; }
-        localStorage.setItem('gdriveApiKey', key);
-        gdriveStatus('⏳ מוריד מ-Drive...', 'info');
-        try {
-            const searchResp = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${encodeURIComponent(filename)}'&spaces=drive&fields=files(id,name)&key=${key}`);
-            if(!searchResp.ok) throw new Error('שגיאת חיבור — בדוק את ה-API Key');
-            const searchData = await searchResp.json();
-            if(searchData.error) throw new Error(searchData.error.message);
-            if(!searchData.files || searchData.files.length === 0) throw new Error(`הקובץ "${filename}" לא נמצא ב-Drive`);
-            const fileId = searchData.files[0].id;
-            const fileResp = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${key}`);
-            if(!fileResp.ok) throw new Error('שגיאה בהורדת הקובץ');
-            const json = await fileResp.text();
-            applyBackupPayload(json);
-            gdriveStatus('✅ הנתונים נטענו מ-Drive בהצלחה!', 'ok');
-        } catch(e) { gdriveStatus('❌ ' + e.message, 'err'); }
-    }
-
-    
     function freezePeriod() {
         if(!currentPeriod) return alert('בחר תקופה');
         const inc=parseFloat(document.getElementById('totalIncome').value)||0;
